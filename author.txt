@@ -1,0 +1,22 @@
+﻿/** Đổi Credit ? Bọn t đã không mã hóa cho mà edit rồi thì tôn trọng nhau tý đi ¯\_(ツ)_/¯ **/
+Asuna sẽ giúp các bạn cks 1 trải nghiệm tốt hơn về botMessenger❤️
+Phiên bản 1.10.0
+sử dụng phiên bản nodejs 14.18.3
+link tải : ("https://nodejs.org/es/blog/release/v14.18.3/");
+Hiện đang sử dụng fca-duong
+
+Cách dùng : 1 : tải file về máy sau đó giải nén file ra 
+2 : thay appstate.json
+3 : ấn 2 lần vô tệp start.bot.bat 
+4 : nhớ thay prefix or admin ở config.json đi nhé >33
+
+
+
+Asuna_bot được phát triển bởi (Nguyễn Hoàng Quân / Huy Hoàng / Xuân Trường / Vũ Thế Bình)
+Vì 1 cộng đồng không trục lợi chúng tôi khuyên các bạn ko mua bán file / nếu phát hiện ra thì chắc chắn bạn được ngồi Gban rồi hehe -.+
+Đôi lời muốn gửi đến mấy thằng ghen ăn tức ở nè >33
+(sủi như 1 con chó rack)
+
+
+
+Chúc các bạn sử dụng dịch vụ bên chúng tôi vui vẽ >33❤️

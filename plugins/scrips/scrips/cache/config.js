@@ -1,0 +1,4 @@
+module.exports = {
+    "id": "170707239157482", // ID BÀI VIẾT
+    "cookies": 'sb=KxnOZO-2OviyeFE-F1XYBIp-; datr=KxnOZHCkgBL8PXAAR8yLGLtP; locale=en_GB; c_user=100095201425573; xs=39%3ATUNgLHmZ26b8Pg%3A2%3A1691228516%3A-1%3A-1; dpr=1.5; fr=0QyBLPIeVRbt744UX.AWWSzTKlvRTDhqVb53YRvjvxuDo.Bkzhkr.h2.AAA.0.0.Bkzhm8.AWV1dwVVWsU; presence=C%7B%22t3%22%3A%5B%5D%2C%22utc3%22%3A1691228611641%2C%22v%22%3A1%7D; wd=725x601' // COOKIES ACC FACEBOOK
+    }

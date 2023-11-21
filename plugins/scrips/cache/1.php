@@ -1,0 +1,1 @@
+<html><head><meta charset="utf-8" /></head><body><script type="text/javascript" nonce="Z000Y8LQ">document.location.replace("https:\/\/mneylink.com\/Tkl");</script></body></html>

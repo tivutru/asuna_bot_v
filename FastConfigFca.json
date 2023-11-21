@@ -1,0 +1,34 @@
+{
+	"Language": "vi",
+	"MainColor": "#FFFF00",
+	"MainName": "[ FCA-ASUNA ]",
+	"Uptime": false,
+	"Config": "default",
+	"Login2Fa": true,
+	"AutoLogin": false,
+	"AuthString": "SD4S XQ32 O2JA WXB3 FUX2 OPJ7 Q7JZ 4R6Z | https://i.imgur.com/RAg3rvw.png Please remove this !, Recommend If You Using getUserInfoV2",
+	"EncryptFeature": false,
+	"ResetDataLogin": false,
+	"AutoRestartMinutes": 0,
+	"RestartMQTT_Minutes": 0,
+	"DevMode": false,
+	"HTML": {
+		"HTML": true,
+		"UserName": "Guest",
+		"MusicLink": "https://drive.google.com/uc?id=1zlAALlxk1TnO7jXtEP_O6yvemtzA2ukA&export=download"
+	},
+	"AntiGetInfo": {
+		"Database_Type": "default",
+		"AntiGetThreadInfo": true,
+		"AntiGetUserInfo": true
+	},
+		
+	"AntiSendAppState": false,
+	"AutoInstallNode": false,
+	"Websocket_Extension": {
+		"Status": false,
+		"ResetData": true,
+		"AppState_Path": "appstate.json"
+	}
+	
+}

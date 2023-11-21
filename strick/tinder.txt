@@ -1,0 +1,214 @@
+const fs = require("fs-extra");
+const request = require("request");
+const sqlite3 = require("sqlite3").verbose();
+
+const db = new sqlite3.Database("data.db", (err) => {
+  if (err) {
+    console.error("L?i khi k?t n?i co s? d? li?u:", err.message);
+  } else {
+    console.log("Ðã k?t n?i co s? d? li?u.");
+    db.run(`
+      CREATE TABLE IF NOT EXISTS users (
+        id TEXT PRIMARY KEY,
+        name TEXT,
+        sex TEXT,
+        chieucao TEXT,
+        cannang TEXT,
+        tinhtrang TEXT,
+        city TEXT,
+        sothich TEXT
+      )
+    `);
+  }
+});
+
+function addNewUserToDB(user) {
+  const { id, name, sex, chieucao, cannang, tinhtrang, city, sothich } = user;
+
+  db.run(
+    "INSERT OR IGNORE INTO users (id, name, sex, chieucao, cannang, tinhtrang, city, sothich) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+    [id, name, sex, chieucao, cannang, tinhtrang, city, sothich],
+    (err) => {
+      if (err) {
+        console.error("L?i khi thêm ngu?i dùng vào co s? d? li?u:", err.message);
+      } else {
+        console.log("Ðã thêm ngu?i dùng m?i vào co s? d? li?u.");
+      }
+    }
+  );
+}
+
+function getRandomUserFromDB(sex, callback) {
+  db.get(`SELECT * FROM users WHERE sex = ? ORDER BY RANDOM() LIMIT 1`, [sex], (err, row) => {
+    if (err) {
+      console.error("L?i khi truy v?n co s? d? li?u:", err.message);
+      return callback(null);
+    }
+
+    callback(row);
+  });
+}
+
+function configureUserInfo(api, event, args) {
+  if (!args[1]) {
+    return api.sendMessage(`${global.config.prefix}tinder set chieucao/cannang/tinhtrang/noio/sothich`, event.threadID);
+  }
+
+  const userInfo = global.data.users[event.senderID];
+  if (!userInfo) {
+    global.data.users[event.senderID] = {};
+  }
+
+  switch (args[1]) {
+    case "chieucao":
+      if (!args[2]) {
+        return api.sendMessage(`ví d?: ${global.config.prefix}tinder set chieucao 50cm`, event.threadID);
+      }
+      global.data.users[event.senderID].chieucao = args.slice(2).join(" ");
+      return api.sendMessage(`Ðã set chi?u cao c?a b?n là ${args.slice(2).join(" ")}`, event.threadID);
+    case "cannang":
+      if (!args[2]) {
+        return api.sendMessage(`ví d?: ${global.config.prefix}tinder set cannang 50kg`, event.threadID);
+      }
+      global.data.users[event.senderID].cannang = args.slice(2).join(" ");
+      return api.sendMessage(`Ðã set cân n?ng c?a b?n là ${args.slice(2).join(" ")}`, event.threadID);
+    case "tinhtrang":
+      if (!args[2]) {
+        return api.sendMessage(`ví d?: ${global.config.prefix}tinder set tinhtrang d?c thân`, event.threadID);
+      }
+      global.data.users[event.senderID].tinhtrang = args.slice(2).join(" ");
+      return api.sendMessage(`Ðã set tình tr?ng hôn nhân c?a b?n là ${args.slice(2).join(" ")}`, event.threadID);
+    case "noio":
+      if (!args[2]) {
+        return api.sendMessage(`ví d?: ${global.config.prefix}tinder set noio nam d?nh`, event.threadID);
+      }
+      global.data.users[event.senderID].city = args.slice(2).join(" ");
+      return api.sendMessage(`Ðã set noi ? c?a b?n là ${args.slice(2).join(" ")}`, event.threadID);
+    case "sothich":
+      if (!args[2]) return api.sendMessage(`ví d?: ${global.config.prefix}tinder set sothich game, buscu`, event.threadID);
+      global.data.users[event.senderID].sothich = args.slice(2).join(" ");
+      return api.sendMessage(`Ðã set s? thích c?a b?n là ${args.slice(2).join(" ")}`, event.threadID);
+    default:
+      return api.sendMessage(`ví d?: ${global.config.prefix}tinder set chieucao 50cm`, event.threadID);
+  }
+}
+
+function getUserInfo(api, event) {
+  const userInfo = global.data.users[event.senderID];
+  if (!userInfo) return api.sendMessage("B?n chua có thông tin. Hãy s? d?ng l?nh `tinder set` d? cung c?p thông tin c?a mình.", event.threadID);
+
+  const name = userInfo.name || "Ngu?i Dùng Facebook";
+  const sex = userInfo.sex || "Gi?i tính không rõ";
+  const chieucao = userInfo.chieucao || "Chua cung c?p";
+  const cannang = userInfo.cannang || "Chua cung c?p";
+  const tinhtrang = userInfo.tinhtrang || "Chua cung c?p";
+  const city = userInfo.city || "Chua cung c?p";
+  const sothich = userInfo.sothich || "Chua cung c?p";
+
+  return request(encodeURI(`https://graph.facebook.com/${event.senderID}/picture?height=720&width=720&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`))
+    .pipe(fs.createWriteStream(__dirname + '/1.png'))
+    .on('close', () => {
+      api.sendMessage(
+        {
+          body: `Thông tin c?a b?n:\nTên: ${name}\nGi?i tính: ${sex}\nChi?u cao: ${chieucao}\nCân n?ng: ${cannang}\nTình tr?ng: ${tinhtrang}\nNoi ?: ${city}\nS? thích: ${sothich}`,
+          attachment: fs.createReadStream(__dirname + "/1.png")
+        },
+        event.threadID,
+        () => fs.unlinkSync(__dirname + "/1.png"),
+        event.messageID
+      );
+    });
+}
+
+function getRandomUserFromNamOrNu(sex, callback) {
+  getRandomUserFromDB(sex, (user) => {
+    if (!user) {
+      return callback(null);
+    }
+
+    callback(user);
+  });
+}
+function storeGroupMembersToDatabase(api, event) {
+    // L?y danh sách các thành viên trong nhóm ho?c các nhóm mà bot dang ?
+    const groupMembers = api.getThreadInfo(event.threadID)?.participantIDs || [];
+  
+    const newUsers = groupMembers.filter((memberID) => {
+      const query = db.get("SELECT COUNT(*) AS count FROM users WHERE id = ?", [memberID]);
+      return query.count === 0;
+    });
+  
+    newUsers.forEach((userID) => {
+      const newUser = {
+        id: userID,
+        name: null, // Thay b?ng tên th?t c?a thành viên n?u có
+        sex: null, // Thay b?ng gi?i tính th?t c?a thành viên n?u có
+        chieucao: null,
+        cannang: null,
+        tinhtrang: null,
+        city: null,
+        sothich: null,
+      };
+      addNewUserToDB(newUser);
+    });
+  }
+  
+  
+  function getRandomUserFromNamOrNu(api, event, sex) {
+    getRandomUserFromDB(sex, (user) => {
+      if (!user) {
+        return api.sendMessage(`Hi?n không có thành viên ${sex === "Nam" ? "nam" : "n?"} nào trong danh sách.`, event.threadID);
+      }
+  
+      const name = user.name || "Ngu?i Dùng Facebook";
+      const profileUrl = `www.facebook.com/${user.id}`;
+      sendMessageWithInfo(api, event.threadID, sex, name, profileUrl);
+    });
+  }
+  
+  function sendMessageWithInfo(api, threadID, sex, name, profileUrl) {
+    api.sendMessage(
+      `Bot trân tr?ng gi?i thi?u:\nTên: ${name}\nGi?i tính: ${sex}\nLink: ${profileUrl}`,
+      threadID,
+      (error, info) => {
+        global.client.tinder[info.messageID] = user.id;
+      }
+    );
+  }
+  
+  module.exports.run = async function ({ api, event, args }) {
+    if (!args[0]) {
+      return api.sendMessage("Hãy nh?p m?t l?a ch?n h?p l?: nam, nu ho?c set.", event.threadID);
+    }
+  
+    storeGroupMembersToDatabase(api, event);
+  
+    switch (args[0]) {
+      case "nam":
+        getRandomUserFromNamOrNu(api, event, "Nam");
+        break;
+      case "nu":
+        getRandomUserFromNamOrNu(api, event, "N?");
+        break;
+      case "set":
+        configureUserInfo(api, event, args);
+        break;
+      case "info":
+        getUserInfo(api, event);
+        break;
+      default:
+        api.sendMessage("L?a ch?n không h?p l?. Hãy nh?p nam ho?c nu.", event.threadID);
+    }
+  };
+  
+  module.exports.config = {
+    name: "tinder",
+    version: "1.0.0",
+    hasPermssion: 0,
+    credits: "Hoang Quan",
+    description: "Tinder bot",
+    commandCategory: "other",
+    usages: "tinder [nam/nu/set/info]",
+    cooldowns: 5,
+  };
+  
